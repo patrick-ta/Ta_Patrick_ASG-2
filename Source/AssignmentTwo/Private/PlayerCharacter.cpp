@@ -1,6 +1,8 @@
 #include "PlayerCharacter.h"
 #include "FireComponent.h"
 #include "HealthComponent.h"
+#include "PaperFlipbook.h"
+#include "PaperFlipbookComponent.h"
 
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
@@ -11,6 +13,8 @@
 
 APlayerCharacter::APlayerCharacter()
 {
+	PrimaryActorTick.bCanEverTick = true;
+
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
@@ -52,7 +56,39 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	{
 		EIC->BindAction(RotateAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Rotate);
 		EIC->BindAction(ThrustAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Thrust);
+		EIC->BindAction(ThrustAction, ETriggerEvent::Completed, this, &APlayerCharacter::StopThrust);
 		EIC->BindAction(FireAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Fire);
+	}
+}
+
+void APlayerCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	FireAnimTimeRemaining = FMath::Max(0.f, FireAnimTimeRemaining - DeltaTime);
+
+	UPaperFlipbook* Desired = IdleFlipbook;
+	if (HealthComponent->IsInvulnerable())
+	{
+		Desired = HurtFlipbook;
+	}
+	else if (FireAnimTimeRemaining > 0.f)
+	{
+		Desired = FireFlipbook;
+	}
+	else if (bThrusting)
+	{
+		Desired = ThrustFlipbook;
+	}
+
+	if (!Desired)
+	{
+		Desired = IdleFlipbook;
+	}
+
+	if (Desired && GetSprite()->GetFlipbook() != Desired)
+	{
+		GetSprite()->SetFlipbook(Desired);
 	}
 }
 
@@ -64,7 +100,13 @@ void APlayerCharacter::Rotate(const FInputActionValue& Value)
 
 void APlayerCharacter::Thrust(const FInputActionValue& Value)
 {
+	bThrusting = true;
 	AddMovementInput(GetActorForwardVector(), 1.f);
+}
+
+void APlayerCharacter::StopThrust(const FInputActionValue& Value)
+{
+	bThrusting = false;
 }
 
 void APlayerCharacter::Fire(const FInputActionValue& Value)
@@ -74,5 +116,8 @@ void APlayerCharacter::Fire(const FInputActionValue& Value)
 		return;
 	}
 
-	FireComponent->Fire();
+	if (FireComponent->Fire())
+	{
+		FireAnimTimeRemaining = FireAnimDuration;
+	}
 }

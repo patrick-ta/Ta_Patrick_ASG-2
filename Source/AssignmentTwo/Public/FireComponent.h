@@ -13,7 +13,7 @@ public:
 	UFireComponent();
 
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
-	void Fire();
+	bool Fire();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	TSubclassOf<AActor> ProjectileClass;

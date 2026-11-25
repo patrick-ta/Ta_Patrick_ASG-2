@@ -9,19 +9,19 @@ UFireComponent::UFireComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-void UFireComponent::Fire()
+bool UFireComponent::Fire()
 {
 	UWorld* World = GetWorld();
 	AActor* Owner = GetOwner();
 	if (!ProjectileClass || !World || !Owner)
 	{
-		return;
+		return false;
 	}
 
 	const float Now = World->GetTimeSeconds();
 	if (Now - LastFireTime < FireCooldown)
 	{
-		return;
+		return false;
 	}
 	LastFireTime = Now;
 
@@ -34,4 +34,5 @@ void UFireComponent::Fire()
 	Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
 	World->SpawnActor<AActor>(ProjectileClass, SpawnLocation, SpawnRotation, Params);
+	return true;
 }
