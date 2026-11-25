@@ -14,6 +14,8 @@ public:
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	static bool GetViewBounds(const UObject* WorldContext, float PlaneY, FVector2D& OutMin, FVector2D& OutMax);
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Wrap")
 	float Margin = 50.f;
 };

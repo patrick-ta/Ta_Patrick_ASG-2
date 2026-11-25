@@ -10,14 +10,12 @@ UScreenWrapComponent::UScreenWrapComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
-void UScreenWrapComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+bool UScreenWrapComponent::GetViewBounds(const UObject* WorldContext, float PlaneY, FVector2D& OutMin, FVector2D& OutMax)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	APlayerController* PC = UGameplayStatics::GetPlayerController(this, 0);
+	APlayerController* PC = UGameplayStatics::GetPlayerController(WorldContext, 0);
 	if (!PC || !PC->PlayerCameraManager)
 	{
-		return;
+		return false;
 	}
 
 	int32 SizeX = 0;
@@ -25,13 +23,10 @@ void UScreenWrapComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	PC->GetViewportSize(SizeX, SizeY);
 	if (SizeX <= 0 || SizeY <= 0)
 	{
-		return;
+		return false;
 	}
 
-	AActor* Owner = GetOwner();
-	const FVector Current = Owner->GetActorLocation();
 	const FMinimalViewInfo View = PC->PlayerCameraManager->GetCameraCacheView();
-
 	const float Aspect = View.bConstrainAspectRatio ? View.AspectRatio : static_cast<float>(SizeX) / SizeY;
 
 	float HalfWidth = 0.f;
@@ -41,14 +36,33 @@ void UScreenWrapComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	}
 	else
 	{
-		HalfWidth = FMath::Tan(FMath::DegreesToRadians(View.FOV * 0.5f)) * FMath::Abs(Current.Y - View.Location.Y);
+		HalfWidth = FMath::Tan(FMath::DegreesToRadians(View.FOV * 0.5f)) * FMath::Abs(PlaneY - View.Location.Y);
 	}
 	const float HalfHeight = HalfWidth / Aspect;
 
-	const float MinX = View.Location.X - HalfWidth - Margin;
-	const float MaxX = View.Location.X + HalfWidth + Margin;
-	const float MinZ = View.Location.Z - HalfHeight - Margin;
-	const float MaxZ = View.Location.Z + HalfHeight + Margin;
+	OutMin = FVector2D(View.Location.X - HalfWidth, View.Location.Z - HalfHeight);
+	OutMax = FVector2D(View.Location.X + HalfWidth, View.Location.Z + HalfHeight);
+	return true;
+}
+
+void UScreenWrapComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	AActor* Owner = GetOwner();
+	const FVector Current = Owner->GetActorLocation();
+
+	FVector2D Min;
+	FVector2D Max;
+	if (!GetViewBounds(this, Current.Y, Min, Max))
+	{
+		return;
+	}
+
+	const float MinX = Min.X - Margin;
+	const float MaxX = Max.X + Margin;
+	const float MinZ = Min.Y - Margin;
+	const float MaxZ = Max.Y + Margin;
 
 	FVector Location = Current;
 
