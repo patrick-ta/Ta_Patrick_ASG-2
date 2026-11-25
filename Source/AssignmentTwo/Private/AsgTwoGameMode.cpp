@@ -12,15 +12,21 @@ void AAsgTwoGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!HealthWidgetClass)
-	{
-		return;
-	}
-
 	APlayerController* PC = UGameplayStatics::GetPlayerController(this, 0);
-	if (UUserWidget* Widget = CreateWidget<UUserWidget>(PC, HealthWidgetClass))
+	if (PC)
 	{
-		Widget->AddToViewport();
+		// Reset input mode back to game — the title screen sets UIOnly + mouse cursor,
+		// and those settings persist on the PlayerController across a level transition.
+		PC->SetInputMode(FInputModeGameOnly());
+		PC->SetShowMouseCursor(false);
+
+		if (HealthWidgetClass)
+		{
+			if (UUserWidget* Widget = CreateWidget<UUserWidget>(PC, HealthWidgetClass))
+			{
+				Widget->AddToViewport();
+			}
+		}
 	}
 }
 
