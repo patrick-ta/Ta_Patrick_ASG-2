@@ -8,6 +8,7 @@
 class UInputAction;
 class UInputMappingContext;
 class UFireComponent;
+class UHealthComponent;
 
 UCLASS()
 class APlayerCharacter : public APaperCharacter
@@ -39,6 +40,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
 	TObjectPtr<UFireComponent> FireComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Health")
+	TObjectPtr<UHealthComponent> HealthComponent;
 
 private:
 	void Rotate(const FInputActionValue& Value);

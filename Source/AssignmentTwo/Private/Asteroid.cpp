@@ -3,6 +3,7 @@
 #include "PaperFlipbookComponent.h"
 #include "Components/SphereComponent.h"
 #include "Engine/World.h"
+#include "HealthComponent.h"
 #include "PlayerCharacter.h"
 #include "ScreenWrapComponent.h"
 
@@ -66,6 +67,12 @@ void AAsteroid::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Othe
 {
 	if (bHit || !OtherActor)
 	{
+		return;
+	}
+
+	if (UHealthComponent* Health = OtherActor->FindComponentByClass<UHealthComponent>())
+	{
+		Health->ApplyDamage(1);
 		return;
 	}
 

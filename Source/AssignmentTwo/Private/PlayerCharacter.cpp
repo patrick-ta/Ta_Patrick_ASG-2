@@ -1,5 +1,6 @@
 #include "PlayerCharacter.h"
 #include "FireComponent.h"
+#include "HealthComponent.h"
 
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
@@ -22,6 +23,7 @@ APlayerCharacter::APlayerCharacter()
 	Move->bSnapToPlaneAtStart = true;
 
 	FireComponent = CreateDefaultSubobject<UFireComponent>(TEXT("FireComponent"));
+	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComponent"));
 }
 
 void APlayerCharacter::BeginPlay()
@@ -67,5 +69,10 @@ void APlayerCharacter::Thrust(const FInputActionValue& Value)
 
 void APlayerCharacter::Fire(const FInputActionValue& Value)
 {
+	if (HealthComponent->IsInvulnerable())
+	{
+		return;
+	}
+
 	FireComponent->Fire();
 }
