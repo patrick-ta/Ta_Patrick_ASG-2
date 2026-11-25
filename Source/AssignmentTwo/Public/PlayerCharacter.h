@@ -7,6 +7,7 @@
 
 class UInputAction;
 class UInputMappingContext;
+class UFireComponent;
 
 UCLASS()
 class APlayerCharacter : public APaperCharacter
@@ -30,12 +31,19 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> ThrustAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> FireAction;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float RotationSpeed = 220.f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
+	TObjectPtr<UFireComponent> FireComponent;
 
 private:
 	void Rotate(const FInputActionValue& Value);
 	void Thrust(const FInputActionValue& Value);
+	void Fire(const FInputActionValue& Value);
 
 	float ShipAngle = 0.f;
 };

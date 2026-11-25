@@ -1,4 +1,5 @@
 #include "PlayerCharacter.h"
+#include "FireComponent.h"
 
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
@@ -19,6 +20,8 @@ APlayerCharacter::APlayerCharacter()
 	Move->bConstrainToPlane = true;
 	Move->SetPlaneConstraintNormal(FVector(0.f, 1.f, 0.f));
 	Move->bSnapToPlaneAtStart = true;
+
+	FireComponent = CreateDefaultSubobject<UFireComponent>(TEXT("FireComponent"));
 }
 
 void APlayerCharacter::BeginPlay()
@@ -47,6 +50,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	{
 		EIC->BindAction(RotateAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Rotate);
 		EIC->BindAction(ThrustAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Thrust);
+		EIC->BindAction(FireAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Fire);
 	}
 }
 
@@ -59,4 +63,9 @@ void APlayerCharacter::Rotate(const FInputActionValue& Value)
 void APlayerCharacter::Thrust(const FInputActionValue& Value)
 {
 	AddMovementInput(GetActorForwardVector(), 1.f);
+}
+
+void APlayerCharacter::Fire(const FInputActionValue& Value)
+{
+	FireComponent->Fire();
 }
