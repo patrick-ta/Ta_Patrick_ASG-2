@@ -20,12 +20,19 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Score")
 	int32 GetScore() const;
 
+	UFUNCTION(BlueprintCallable, Category = "GameOver")
+	void GameOver();
+
 protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
 	TSubclassOf<UUserWidget> HealthWidgetClass;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
+	TSubclassOf<UUserWidget> GameOverWidgetClass;
+
 private:
 	int32 Score = 0;
+	bool bGameOver = false;
 };

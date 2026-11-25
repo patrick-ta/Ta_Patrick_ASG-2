@@ -39,3 +39,26 @@ int32 AAsgTwoGameMode::GetScore() const
 {
 	return Score;
 }
+
+void AAsgTwoGameMode::GameOver()
+{
+	if (bGameOver || !GameOverWidgetClass)
+	{
+		return;
+	}
+	bGameOver = true;
+
+	APlayerController* PC = UGameplayStatics::GetPlayerController(this, 0);
+	if (!PC)
+	{
+		return;
+	}
+
+	if (UUserWidget* Widget = CreateWidget<UUserWidget>(PC, GameOverWidgetClass))
+	{
+		Widget->AddToViewport();
+	}
+
+	PC->SetInputMode(FInputModeUIOnly());
+	PC->SetShowMouseCursor(true);
+}

@@ -1,5 +1,7 @@
 #include "HealthComponent.h"
 
+#include "AsgTwoGameMode.h"
+#include "Engine/World.h"
 #include "GameFramework/Actor.h"
 #include "PaperFlipbookComponent.h"
 
@@ -55,6 +57,11 @@ void UHealthComponent::ApplyDamage(int32 Amount)
 
 	if (CurrentHealth <= 0)
 	{
+		if (AAsgTwoGameMode* GameMode = GetWorld()->GetAuthGameMode<AAsgTwoGameMode>())
+		{
+			GameMode->GameOver();
+		}
+
 		GetOwner()->Destroy();
 		return;
 	}
