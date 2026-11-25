@@ -61,6 +61,15 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Asteroid")
 	float SmallScale = 0.3f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Asteroid")
+	int32 LargePoints = 20;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Asteroid")
+	int32 MediumPoints = 50;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Asteroid")
+	int32 SmallPoints = 100;
+
 private:
 	UFUNCTION()
 	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

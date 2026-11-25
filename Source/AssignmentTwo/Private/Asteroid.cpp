@@ -3,6 +3,7 @@
 #include "PaperFlipbookComponent.h"
 #include "Components/SphereComponent.h"
 #include "Engine/World.h"
+#include "AsgTwoGameMode.h"
 #include "HealthComponent.h"
 #include "PlayerCharacter.h"
 #include "ScreenWrapComponent.h"
@@ -82,6 +83,22 @@ void AAsteroid::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Othe
 	}
 
 	bHit = true;
+
+	int32 Points = LargePoints;
+	if (Size == EAsteroidSize::Medium)
+	{
+		Points = MediumPoints;
+	}
+	else if (Size == EAsteroidSize::Small)
+	{
+		Points = SmallPoints;
+	}
+
+	if (AAsgTwoGameMode* GameMode = GetWorld()->GetAuthGameMode<AAsgTwoGameMode>())
+	{
+		GameMode->AddScore(Points);
+	}
+
 	OtherActor->Destroy();
 	Split();
 	Destroy();

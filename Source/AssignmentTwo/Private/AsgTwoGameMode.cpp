@@ -23,3 +23,13 @@ void AAsgTwoGameMode::BeginPlay()
 		Widget->AddToViewport();
 	}
 }
+
+void AAsgTwoGameMode::AddScore(int32 Points)
+{
+	Score += Points;
+}
+
+int32 AAsgTwoGameMode::GetScore() const
+{
+	return Score;
+}

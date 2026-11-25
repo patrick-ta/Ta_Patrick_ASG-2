@@ -5,6 +5,7 @@
 #include "HealthWidget.generated.h"
 
 class UImage;
+class UTextBlock;
 class UTexture2D;
 
 UCLASS()
@@ -18,9 +19,13 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> HealthImage;
 
+	UPROPERTY(meta = (BindWidgetOptional))
+	TObjectPtr<UTextBlock> ScoreText;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	TArray<TObjectPtr<UTexture2D>> HealthTextures;
 
 private:
 	int32 DisplayedHealth = -1;
+	int32 DisplayedScore = -1;
 };
